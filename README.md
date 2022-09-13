@@ -1,24 +1,88 @@
-# Project
+# Django Basic User App
 
 ## Getting Up and Running
 
 ### Setting Up the Virtual Environment
 
-1. Run `python -m venv venv` to create the virtual environment.
-2. Activate the virtual environment using `. venv/bin/activate` (don't forget the dot in front).
-3. Install requirements with `pip install -r requirements.txt`.
-
-4. At this point, you should define the required environment variables for the project. You can define them in an .env file and load them with the command below. See the Project Settings section for more information on the relevant environment variables.
+1. Create a django project:
 
 ```sh
-export $(xargs < .env)
+django-admin createproject <project-name>
 ```
 
-5. Django migrations: `python manage.py makemigrations` and `python manage.py migrate` in that order.
+2. Modify the ```settings.py``` file to include the following for setting up email and logging in:
 
-## Running Locally
+```python
+...
+import os
+...
+########################## Login Configuration
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
 
-Run the standard Django command `python manage.py runserver` to run the project locally.
+########################## SMTP Configuration
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', '')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', '')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '')
+```
+
+3. Run migrations and create the superuser.
+
+```sh
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+4. Edit the ```urls.py``` file so the new app URLs are included. For instance:
+
+```python
+urlpatterns = [
+    path('user_app/', include('user_app.urls')),
+    path('admin/', admin.site.urls),
+]
+```
+
+5. Clone this repository. You'll need to massage the directory structure so that `user_app` folder is siblings with whatever the `<project-name>/<project-name>` folder is. Put the requirements.txt within the parent project folder.
+
+6. Write an `.env` file for defining your email settings through environment variables. You can also hardcode them in `settings.py`, but only if this is going to be development and not deployed anywhere else!!!!!!!!!!!!!
+
+7. Add ```user_app``` to the INSTALLED_APPS list in ```settings.py```.
+
+```
+INSTALLED_APPS = [
+    'user_app',
+    ...
+]
+```
+
+8. Run `python -m venv venv` to create the virtual environment.
+
+9. Activate the virtual environment using `. venv/bin/activate` (don't forget the dot in front).
+
+10. Run the following command to load your environment variables from a .env file:
+
+```sh
+export $(xargs < .env) 
+```
+
+12. Install requirements with `pip install -r requirements.txt`.
+
+13. Perform another migration: 
+```sh
+python manage.py makemigrations
+python manage.py migrate
+```
+
+14. Run the app locally:
+
+```
+python manage.py runserver
+```
 
 ## Project Settings
 
@@ -33,15 +97,10 @@ EMAIL_PORT
 EMAIL_USE_TLS
 EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD
+DEFAULT_FROM_EMAIL
 ```
 
-You can also define them in environment variables and import them using:
-
-```python
-os.environ.get('KEY')
-or
-os.environ['KEY']
-```
+You can also define them in environment variables and import them using the command provided above.
 
 You can find more information on configuring Django to send email here:
 https://docs.djangoproject.com/en/4.1/topics/email/
@@ -61,8 +120,6 @@ HTML_MESSAGE_TEMPLATE
 
 VERIFICATION_FAILED_MSG 
 VERIFICATION_SUCCESS_MSG
-
-DEFAULT_FROM_EMAIL
 ```
 
 ### Login Settings
