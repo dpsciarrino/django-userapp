@@ -1,0 +1,23 @@
+{% extends "user_app/base.html" %}
+
+{%block content%}
+
+
+<div>
+    <div>
+        <h1>{{status}}</h1>
+    </div>
+    
+    <div>
+        <p>{{msg}}</p>
+    </div>
+
+    <div>
+        <p>{{ minor_msg }}</p>
+    </div>
+
+    <a href="{% url 'login' %}">Login</a>
+</div>
+
+{%endblock%}
+
